@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+    <style>
+        body{
+            background-color: black;
+            margin: 0;
+        }
+        canvas{
+            display: block;
+            background-color: black;
+            /*height:700px;*/
+            /*width:900px;*/
+
+        }
+    </style>
+</head>
+<body>
+<canvas id="canv"></canvas>
+<audio id="click">
+    <source src="click.wav">
+</audio>
+<audio id="over">
+    <source src="over.wav">
+</audio>
+
+
+
+<script>
+    window.onload=function () {
+        var canvas;
+        var ctx;
+        canvas = document.getElementById('canv');
+        ctx = canvas.getContext('2d');
+        var clik=document.getElementById("click")
+        clik.preload = 'auto';
+        clik.load();
+        var over=document.getElementById("over")
+        over.preload = 'auto';
+        over.load();
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var gravity = 0.25
+        var speed = 2
+        var pos = 500
+        var out=0;
+        var score=0
+        var realscore=0;
+
+
+        window.onclick = function () {
+            // var clikplay=clik.cloneNode();
+            // clikplay.play();
+            // clik.pause();
+            if(out==0) {
+                clik.play();
+            }
+            // if (speed>0){
+            speed = -6;
+            }
+            // else{speed+=1}
+            // pos-=speed;
+
+            // canvas = document.getElementById('canv');
+
+
+            // var ciry = canvas.height / 3;
+
+            var obsarr = [];
+            var color=['#661b90','#f2a200','#00cc1b','#29a69d','#005ce6','#e600d6','red'];
+
+            bcolindex=Math.floor(Math.random()*color.length)
+            var bcol=color[bcolindex]
+            console.log(bcol)
+            color.splice(bcolindex,1)
+            console.log(color)
+
+            var c1 = new Obstacle(200, color[Math.floor(Math.random()*color.length)] );
+            obsarr.push(c1);
+
+            function sr() {
+                // console.log("in")
+                ctx.beginPath();
+                ctx.arc(canvas.width / 2, pos, 20, 0, Math.PI * 2, false);
+                // var bcol=Math.floor(Math.random()*color.length)
+
+                ctx.fillStyle = bcol;
+
+                ctx.fill();
+                ctx.closePath();
+
+
+
+
+            }
+
+            sr();
+            animate();
+
+            function update() {
+                console.log(pos,canvas.height,out)
+                if (pos+40>=canvas.height)
+                {
+                    out=1;
+                }
+                // if (speed<0)
+                // {
+                //     score+=Math.abs(speed)
+                // }
+                if (obsarr[obsarr.length - 1].y > canvas.height / 3) {
+                    var c1 = new Obstacle(-200, color[Math.floor(Math.random()*color.length)]);
+                    obsarr.push(c1);
+
+                }
+                // console.log(Math.floor(realscore/100))
+                score-=speed;
+                if(score>realscore)
+                {
+                    realscore=score
+                }
+                // realscore=Math.floor(realscore/100)
+                ctx.font = "80px Arial";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "right";
+
+                ctx.fillText(Math.floor(realscore/100), canvas.width-80, 80);
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "right";
+
+                // if(localStorage.getItem("scores")) {
+                //
+                //     // if (Math.floor(realscore / 100) > localStorage.getItem("scores")) {
+                //     //     localStorage.setItem("scores", Math.floor(realscore / 100))
+                //     // }
+                //     //
+                //     // ctx.fillText("HIGHSCORE:" + localStorage.getItem("scores"), canvas.width - 80, 130);
+                //
+                // }
+                // else
+                // {
+                //     ctx.fillText("HIGHSCORE:" + 0, canvas.width - 80, 130);
+                // }
+                // ctx.strokeText(realscore, -100, 50);
+
+
+
+                if (typeof (Storage) !== "undefined") {
+                    var scores = false;
+
+                    if (localStorage["scores"]) {
+
+                        scores = localStorage.getItem("scores")
+                        if (Math.floor(realscore/100)>scores)
+                        {
+                            localStorage.setItem("scores",Math.floor(realscore/100))
+                        }
+
+
+
+                    } else {
+
+                        localStorage.setItem("scores",Math.floor(realscore/100))
+
+                    }
+                }
+                ctx.fillText("HIGHSCORE:" + localStorage.getItem("scores"), canvas.width - 80, 130);
+
+
+
+                speed += gravity
+
+                if (pos + speed > canvas.height / 2) {
+                    pos += speed;
+
+                }
+                sr();
+                // xi += 0.05;
+
+
+            }
+
+            function Obstacle(y, color) {
+                this.xi = Math.random()*Math.PI;
+                this.rot=(Math.random()*0.05)+0.05
+                console.log(this.rot)
+
+                this.y = y;
+                this.safex=canvas.width / 2+95*Math.cos(this.xi+Math.PI/2);
+                this.safey=this.y+95*Math.sin(this.xi+Math.PI/2);
+                // console.log(this.safex)
+                this.color = color;
+
+                // this.updateobs();
+                this.updateobs = function () {
+                    // console.log(Math.abs(this.y-pos))
+                    if((this.y-pos>=90-20 && this.y-pos<=100+20) || (this.y-pos<=-(90-20) && this.y-pos>=-(100+20)))
+                    {
+                        if(Math.sqrt(Math.pow(this.safex-canvas.width/2,2)+Math.pow(this.safey-pos,2))>95*1.414)
+                        {
+                            // console.log(this.safex,canvas.width/2,this.safey,pos)
+
+                            // console.log("out")
+                            // console.log(Math.sqrt(Math.pow(this.safex-canvas.width/2,2)+Math.pow(this.safey-pos,2)))
+
+
+                        out=1
+                        }
+
+                        // console.log("inside")
+                    }
+
+                    this.xi+=this.rot ;
+                    if (pos + speed < canvas.height / 2 && speed < 0) {
+                        this.y -= speed;
+                        // score=Math.floor(score/100)
+                        // score+=-speed
+                        
+                    }
+                    this.safex=canvas.width / 2+95*Math.cos(this.xi+Math.PI/2);
+                    this.safey=this.y+95*Math.sin(this.xi+Math.PI/2);
+                    // console.log(this.safex)
+                    this.draw();
+
+                    
+                }
+                this.draw = function () {
+
+
+                    // -------------------------------------
+                    ctx.beginPath();
+                    ctx.arc(canvas.width / 2, this.y, 95, this.xi, this.xi + Math.PI, false);
+                    ctx.strokeStyle = bcol;
+
+                    ctx.lineWidth = 20;
+                    ctx.stroke();
+
+                    ctx.beginPath();
+
+                    ctx.arc(canvas.width / 2, this.y, 95, this.xi, this.xi + Math.PI, true);
+                    ctx.strokeStyle = this.color;
+
+                    ctx.lineWidth = 20;
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+
+            }
+
+        function animate() {
+            // requestAnimationFrame(animate);
+            // console.log(out)
+
+            if(out==0)
+            {
+                requestAnimationFrame(animate);
+                // cancelAnimationFrame(ani);
+            }
+            else{
+                over.play();
+                hsc()
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for( var i =0;i<obsarr.length;i++){
+                obsarr[i].updateobs()
+            }
+
+
+            update();
+        }
+        function hsc() {
+
+
+            if (typeof (Storage) !== "undefined") {
+                var scores = false;
+
+                if (localStorage["scores"]) {
+
+                    scores = localStorage.getItem("scores")
+                    if (Math.floor(realscore/100)>scores)
+                    {
+                        localStorage.setItem("scores",Math.floor(realscore/100))
+                    }
+
+
+
+                } else {
+
+                    localStorage.setItem("scores",Math.floor(realscore/100))
+
+                }
+            }
+        }
+
+    }
+
+
+
+
+
+</script>
+</body>
+</html>
