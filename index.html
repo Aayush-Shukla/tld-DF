@@ -9,6 +9,7 @@
         body{
             background-color: black;
             margin: 0;
+            touch-action: manipulation;
         }
         canvas{
             display: block;
@@ -47,7 +48,7 @@
 
         var gravity = 0.25
         var speed = 2
-        var pos = 500
+        var pos = 3*canvas.height/4;
         var out=0;
         var score=0
         var realscore=0;
