@@ -148,7 +148,8 @@ var canvas;                                                                     
 
 
             }
-
+            
+            if(puarr.length>0){
             if (pos - puarr[puarr.length - 1].y < 30) {
 
                 bcol = puarr[puarr.length - 1].color
@@ -157,7 +158,7 @@ var canvas;                                                                     
             if (bcol == puarr[puarr.length - 1].color) {
                 puarr[puarr.length - 1].radius = 0
             }
-
+            }
 
             score -= speed;
             if (score > realscore) {
